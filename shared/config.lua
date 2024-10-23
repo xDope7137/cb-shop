@@ -1,18 +1,10 @@
 Config = {}
-Config.UseTextUI = true --only qb target false
+Config.UseTextUI = false --only qb target false
 Config.InventoryFolder = "nui://qb-inventory/html/images/"
 Config.Text = "textui2" --textui2
 --ox nui://ox_inventory/web/images/
 --qs nui://qs-inventory/html/images/
 
-Config.OldInv = "qb" --if you are using qb inventory and if you are using ox before pa write ox here if not you don't need to write anything
-
-Config.ServerCallbacks = {}
-
-Config.Notify = {
-    ["success"] = "The purchase was successful enjoy",
-    ["error"] = "You don't have enough balance"
-}
 
 Config.Shops = {
     {

@@ -1,12 +1,13 @@
-# SHOP SYSTEM FOR QBCORE FRAMEWORK LIKE NOPIXEL 4.0
+# Shop System for QBCore And ESX Framework
 
-![npx 1](https://github.com/user-attachments/assets/c48b55a2-c604-4f60-a294-1aad7b334fd7)
+![cb-shop](https://github.com/user-attachments/assets/c48b55a2-c604-4f60-a294-1aad7b334fd7)
 
+Dependency : 
 
-
-## YOU NEED AN ADDITIONAL SCRIPT IN THE FORM OF AN INTERACTION BUTTON
-
-[TEXT UI](https://github.com/ExterCore/exter-textui)
+[cb_lib](https://github.com/cbdev9/cb_lib)
 
 INSPIRED BY 
 [AVILCHIIS](https://github.com/avilchiis/av_shops)
+
+ORIGINAL BY
+[EXTER](https://github.com/ExterCore/exter-shop)

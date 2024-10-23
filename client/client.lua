@@ -1,70 +1,6 @@
-local QBCore = exports["qb-core"]:GetCoreObject()
-
-reqJob = nil
-id = 0
-Citizen.CreateThread(function()
-    for k, v in pairs(Config.Shops) do
-        for a, b in pairs(v.coords) do
-            if Config.Text == 'textui2' then           
-                if v.type == 'job' then 
-                    if v.jobName == '' then 
-                        reqJob = 'all'
-                    else
-                        reqJob = v.jobName
-                    end
-                else
-                    reqJob = 'all'
-                end
-                id = id + 1
-                local coords = vector3(b.coords.x, b.coords.y, b.coords.z)
-                exports['exter-textui']:create3DTextUI("exter-shop-" .. id, {
-                    coords = coords,
-                    displayDist = 5.0,
-                    interactDist = 2.0,
-                    enableKeyClick = true,
-                    keyNum = 38,
-                    key = "E",
-                    text = "Selling Point",
-                    theme = "green", 
-                    job = reqJob,
-                    triggerData = {
-                        triggerName = "exter-shop:openShop",
-                        args = {name = v.name, label = v.label, categories = v.categories, type = v.type}
-                    }
-                })
-            end
-        end
-    end
-end)
-
-
-
-if Config.UseTextUI then
-    Citizen.CreateThread(function()
-        while true do
-            local sleep = 1000
-            local playerCoords = GetEntityCoords(PlayerPedId())
-            for k, v in pairs(Config.Shops) do
-                for a, b in pairs(v.coords) do
-                    local dist = #(playerCoords - vector3(b.coords.x, b.coords.y, b.coords.z))
-                    if dist <= 3 then
-                        if Config.Text == 'textui1' then 
-                            sleep = 0
-                            item = {["item"] = {[1] = {name = "Open"}}}
-                            exports["exter-text"]:openTextUi(item,b.coords,3)
-                            if IsControlJustPressed(0, 38) then
-                                openShop(v.name, v.label, v.categories, v.type)
-                            end
-                        end
-                    end
-                end
-            end
-            Citizen.Wait(sleep)
-        end
-    end)
-end
-
+local cblib = exports.cb_lib:Core()
 local pedSpawned = false
+
 function createPeds()
     if pedSpawned then return end
     for k, v in pairs(Config.Shops) do
@@ -80,41 +16,19 @@ function createPeds()
             SetEntityInvincible(b.ped, true)
             SetBlockingOfNonTemporaryEvents(b.ped, true)
             SetModelAsNoLongerNeeded(pedHash2)
-            pedSpawned = true
-            if Config.UseTextUI == false then
-                if v.type == "job" then
-                    exports['qb-target']:AddTargetEntity(b.ped, {
-                        options = {
-                            {
-                                label = v.name .. ' | ' .. v.label,
-                                icon = 'fa-solid fa-basket-shopping',
-                                job = v.jobName,
-                                action = function()
-                                    openShop(v.name, v.label, v.categories, v.type)
-                                end
-                            }
-                        },
-                        distance = 3.0
-                    })
-                else
-                    
-                    exports['qb-target']:AddTargetEntity(b.ped, {
-                        options = {
-                            {
-                                label = v.name .. ' | ' .. v.label,
-                                icon = 'fa-solid fa-basket-shopping',
-                                action = function()
-                                    openShop(v.name, v.label, v.categories, v.type)
-                                end
-                            }
-                        },
-                        distance = 3.0
-                    })
-                end
-            else
-                -- exports['exter-textui']:AddTextUIPed(ObjToNet(b.ped), vector3(b.coords.x, b.coords.y, b.coords.z), 'E', 'Open Shop', 2.5)
-            end
+
+            cblib.Target.AddEntity(b.ped, {
+                {
+                    icon = 'fas fa-boxes-packing',
+                    label = v.name .. ' | ' .. v.label,
+                    job = v.jobName,
+                    onSelect = function()
+                        openShop(v.name, v.label, v.categories, v.type)
+                    end,
+                }
+            }, 3)
         end
+        pedSpawned = true
     end
 end
 
@@ -161,7 +75,7 @@ RegisterNUICallback("close",function()
 end)
 
 RegisterNUICallback("pay",function(data)
-    TriggerServerEvent("exter-shop:pay", data)
+    TriggerServerEvent("cb-shop:pay", data)
 end)
 
 basket = {}
@@ -182,25 +96,12 @@ function openShop(name, label, category, type)
     SendNUIMessage({action = "openShop", name = name, label = label, categories = categories, type = type, resourceName = GetCurrentResourceName(),folder= Config.InventoryFolder})
 end
 
-RegisterNetEvent('exter-shop:openShop')
-AddEventHandler('exter-shop:openShop', function(data)
+RegisterNetEvent('cb-shop:openShop')
+AddEventHandler('cb-shop:openShop', function(data)
     openShop(data.name, data.label, data.categories, data.type)
 end)
 
 RegisterNUICallback('addToBasket', function(data)
-    -- if type(data.license) == 'table' then
-    --     for k, v in ipairs(data.license) do
-    --         if not QBCore.Functions.GetPlayerData().metadata["licences"][license] then
-    --             QBCore.Functions.Notify("Missing a " ..  license .. " license for certain products", "error")
-    --             return
-    --         end
-    --     end
-    -- elseif data.license ~= nil and data.license ~= "undefined" then
-    --     if not QBCore.Functions.GetPlayerData().metadata["licences"][data.license] then
-    --         QBCore.Functions.Notify("Missing a " ..  data.license .. " license for certain products", "error")
-    --         return
-    --     end
-    -- end
     if json.encode(basket) == "{}" or json.encode(basket) == "[]" then
         table.insert(basket, {
             name = data.name,
@@ -343,11 +244,11 @@ RegisterNUICallback('deleteItemFromBasketJob', function(data)
 end)
 
 RegisterNUICallback('makePayment', function(data)
-    TriggerServerEvent('exter-shop:makePayment', data.type, data.price, basket)
+    TriggerServerEvent('cb-shop:makePayment', data.type, data.price, basket)
 end)
 
 RegisterNUICallback('makePaymentJob', function(data)
-    TriggerServerEvent('exter-shop:makePayment', data.type, data.price, basketJob)
+    TriggerServerEvent('cb-shop:makePayment', data.type, data.price, basketJob)
 end)
 
 function hasLicense(licenses, playerLicenses)
@@ -356,4 +257,3 @@ function hasLicense(licenses, playerLicenses)
     end
     return false
 end
-
