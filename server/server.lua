@@ -38,23 +38,23 @@ end)
 --     },
 -- },
 
-RegisterCommand('openstore', function (source, args, raw)
-    TriggerClientEvent('cb-shop:openShop', source, {
-        name = "Market",
-        label = "7/24 Market",
-        type = "normal",
-        blip = true,
-        blipSprite = 59,
-        blipColor = 2,
-        blipScale = 0.5,
-        categories = {
-            [1] = {
-                name = "General",
-                description = "Needs",
-                items = {
-                    {name = "water_bottle", label = "Water", perPrice = 150, description = "Drinks"},
-                }
-            },
-        },
-    })
-end)
+-- RegisterCommand('openstore', function (source, args, raw)
+--     TriggerClientEvent('cb-shop:openShop', source, {
+--         name = "Market",
+--         label = "7/24 Market",
+--         type = "normal",
+--         blip = true,
+--         blipSprite = 59,
+--         blipColor = 2,
+--         blipScale = 0.5,
+--         categories = {
+--             [1] = {
+--                 name = "General",
+--                 description = "Needs",
+--                 items = {
+--                     {name = "water_bottle", label = "Water", perPrice = 150, description = "Drinks"},
+--                 }
+--             },
+--         },
+--     })
+-- end)
